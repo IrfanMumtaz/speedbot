@@ -61,7 +61,7 @@ module.exports = function() {
     };
 
 
-    this.launchChromeAndRunLighthouse = function(url){
+    this.launchChromeAndRunLighthouse =  function(url){
         
 
         return chromeLauncher.launch().then((chrome) => {
@@ -81,8 +81,7 @@ module.exports = function() {
 
                 return chrome.kill().then(() => {
                     return {
-                        js: results.lhr,
-                        json: results.report,
+                        json: results.report.environment,
                     };
                 });
             });
