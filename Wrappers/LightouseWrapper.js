@@ -1,3 +1,4 @@
+"use strict";
 const lighthouse = require("lighthouse");
 const chromeLauncher = require("chrome-launcher");
 const fs = require("fs");
@@ -29,8 +30,8 @@ module.exports = function() {
             sync: true,
         });
         if (prevReports.length) {
-            dates = [];
-            for (report in prevReports) {
+            const dates = [];
+            for (let report in prevReports) {
                 dates.push(
                     new Date(
                         path.parse(prevReports[report]).name.replace(/_/g, ":")
@@ -71,7 +72,8 @@ module.exports = function() {
             return lighthouse(url, opts).then((results) => {
 
                 //create directory
-                const directory = this.makeDirectory(url)
+                const directory = this.makeDirectory(url);
+                console.log(directory)
                 
                 //sync all previous report
                 this.syncPreviousReport(directory)
@@ -81,7 +83,7 @@ module.exports = function() {
 
                 return chrome.kill().then(() => {
                     return {
-                        json: results.report.environment,
+                        json: "success",
                     };
                 });
             });
