@@ -7,8 +7,10 @@ const express = require("express"),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const routes = require("./route"); //importing route
-routes(app);
+global.__basepath = process.cwd();
+
+const routes = require("./routes/route"); //importing route
+app.use(routes.router);
 
 app.listen(port);
 
