@@ -43,7 +43,7 @@ module.exports = function() {
 
     this.writeRerport = function(directory, results){
         const file = `${directory}/${results.lhr["fetchTime"].replace(/:/g, "_")}.json`;
-        fs.writeFile(
+        fs.writeFileSync(
             file,
             results.report,
             (err) => {
@@ -62,32 +62,31 @@ module.exports = function() {
     };
 
 
-    this.launchChromeAndRunLighthouse =  function(url){
-        
+    this.launchChromeAndRunLighthouse = async function(url){
 
-        return chromeLauncher.launch().then((chrome) => {
-            const opts = {
-                port: chrome.port,
-            };
-            return lighthouse(url, opts).then((results) => {
+        try {
+            const chrome = await chromeLauncher.launch();
 
-                //create directory
-                const directory = this.makeDirectory(url);
-                console.log(directory)
-                
-                //sync all previous report
-                this.syncPreviousReport(directory)
+            //create directory
+            const directory = this.makeDirectory(url);
 
-                //write report in file
-                this.writeRerport(directory, results);
+            //sync all previous report
+            await this.syncPreviousReport(directory);
 
-                return chrome.kill().then(() => {
-                    return {
-                        json: "success",
-                    };
-                });
-            });
-        });
+            //get result
+            const results = await lighthouse(url, {port: chrome.port});
+            //kill chrome
+            await chrome.kill();
+
+            //write report in file
+            await this.writeRerport(directory, results);
+
+            return results.lhr;
+            
+        } catch (error) {
+            console.log(error);
+            return null
+        }
     }
 
 }
