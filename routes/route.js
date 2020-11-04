@@ -6,6 +6,4 @@ const LighthouseController = require(`${global.__basepath}/src/Http/Controllers/
 router.get("/", LighthouseController.get);
 router.post("/pagespeed", LighthouseController.store);
 
-module.exports = {
-    router
-}
+module.exports = router

@@ -7,11 +7,21 @@ const express = require("express"),
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+//define global variables
 global.__basepath = process.cwd();
 
-const routes = require("./routes/route"); //importing route
-app.use(routes.router);
+//middlewares
+const AuthMiddleware = require(`${global.__basepath}/src/Http/Middleware/AuthMiddleware`);
+app.use(AuthMiddleware)
 
+//importing route
+const router = require(`${global.__basepath}/routes/route`); 
+app.use(router);
+
+//Error Handler
+const Handler = require(`${global.__basepath}/src/Exceptions/Handler`);
+app.use(Handler);
+
+//listening
 app.listen(port);
-
 console.log("RESTful API server started on: " + port);
