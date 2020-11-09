@@ -66,7 +66,7 @@ module.exports = function() {
 
     this.lighthouseReport = function (url, chrome){
         lighthouse(url, {port: chrome.port}).then((result) =>{
-            this.writeRerport(results);
+            this.writeRerport(result);
             chrome.kill();
         });
     }
