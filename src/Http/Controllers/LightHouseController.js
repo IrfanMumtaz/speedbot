@@ -15,6 +15,6 @@ exports.index = async (req, res) => {
 exports.show = async (req, res) => {
     const lighthouseWrapper = new LighthouseWrapper();
     const {directory, filename} = req.params;
-    const result = await lighthouseWrapper.readReport(directory, filename);
-    res.json( {result} );
+    const data = await lighthouseWrapper.readReport(directory, filename);
+    res.json( {data} );
 }

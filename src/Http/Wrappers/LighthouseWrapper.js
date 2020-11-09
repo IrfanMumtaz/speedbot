@@ -58,11 +58,24 @@ module.exports = function() {
     }
 
     this.readReport = function (directory, filename) {
-        console.log(`${this.path}/${directory}/${filename}.json`);
-        const output = fs.readFileSync(`${this.path}/${directory}/${filename}.json`, "utf8", (err, results) => {
+        let output = fs.readFileSync(`${this.path}/${directory}/${filename}.json`, "utf8", (err, results) => {
             return results;
         });
-        return JSON.parse(output);
+        output = JSON.parse(output);
+        return {
+            performance: (output.categories.performance.score * 100),
+            accessibility: (output.categories.accessibility.score * 100),
+            seo: (output.categories.seo.score * 100),
+            first_contentful_paint: (output.audits.metrics.details.items[0].firstContentfulPaint / 1000),
+            first_meaningful_paint: (output.audits.metrics.details.items[0].firstMeaningfulPaint / 1000),
+            largest_contentful_paint: (output.audits.metrics.details.items[0].largestContentfulPaint / 1000),
+            interactive_time: (output.audits.metrics.details.items[0].interactive / 1000),
+            speed_index: (output.audits.metrics.details.items[0].speedIndex / 1000),
+            total_blocking_time: (output.audits.metrics.details.items[0].totalBlockingTime / 1000),
+            cumulative_layout_shft: (output.audits.metrics.details.items[0].cumulativeLayoutShift * 1000),
+            estimated_input_latency: (output.audits.metrics.details.items[0].estimatedInputLatency),
+            screenshot: output.audits['final-screenshot'].details.data,
+        };
     };
 
     this.lighthouseReport = function (url, chrome){
