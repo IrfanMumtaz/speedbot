@@ -1,6 +1,6 @@
 "use strict";
 
-const LighthouseWrapper = require(`${global.__basepath}/src/Http/Wrappers/LightouseWrapper`)
+const LighthouseWrapper = require(`${global.__basepath}/src/Http/Wrappers/LighthouseWrapper`)
 
 exports.store = async (req, res) => {
     const lighthouseWrapper = new LighthouseWrapper();
