@@ -8,6 +8,13 @@ exports.store = async (req, res) => {
     res.json( {result} );
 };
 
-exports.get = async (req, res) => {
+exports.index = async (req, res) => {
     res.json({result: "success"})
+}
+
+exports.show = async (req, res) => {
+    const lighthouseWrapper = new LighthouseWrapper();
+    const {directory, filename} = req.params;
+    const result = await lighthouseWrapper.readReport(directory, filename);
+    res.json( {result} );
 }

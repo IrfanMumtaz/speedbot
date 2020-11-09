@@ -57,8 +57,9 @@ module.exports = function() {
         return file;
     }
 
-    this.readReport = function (pathStr) {
-        const output = fs.readFileSync(pathStr, "utf8", (err, results) => {
+    this.readReport = function (directory, filename) {
+        console.log(`${this.path}/${directory}/${filename}.json`);
+        const output = fs.readFileSync(`${this.path}/${directory}/${filename}.json`, "utf8", (err, results) => {
             return results;
         });
         return JSON.parse(output);
