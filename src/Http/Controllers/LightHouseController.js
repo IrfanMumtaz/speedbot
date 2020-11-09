@@ -4,8 +4,8 @@ const LighthouseWrapper = require(`${global.__basepath}/src/Http/Wrappers/Lighth
 
 exports.store = async (req, res) => {
     const lighthouseWrapper = new LighthouseWrapper();
-    const result = await lighthouseWrapper.launchChromeAndRunLighthouse(req.body.url)
-    res.json( {result} );
+    const data = await lighthouseWrapper.launchChromeAndRunLighthouse(req.body.url)
+    res.json( {data} );
 };
 
 exports.index = async (req, res) => {

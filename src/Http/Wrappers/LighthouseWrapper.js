@@ -103,7 +103,7 @@ module.exports = function() {
             //get result
             this.lighthouseReport(url, chrome);
 
-            return this.name;
+            return {filename: this.name};
             
         } catch (error) {
             console.log(error);
