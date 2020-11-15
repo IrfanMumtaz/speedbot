@@ -13,8 +13,13 @@ exports.index = async (req, res) => {
 }
 
 exports.show = async (req, res) => {
-    const lighthouseWrapper = new LighthouseWrapper();
-    const {directory, filename} = req.params;
-    const data = await lighthouseWrapper.readReport(directory, filename);
-    res.json( {data} );
+    try {
+        const lighthouseWrapper = new LighthouseWrapper();
+        const {directory, filename} = req.params;
+        const data = await lighthouseWrapper.readReport(directory, filename);
+        res.json( {data} );
+        
+    } catch (error) {
+        res.status(error.code).json({result: error.message})
+    }
 }

@@ -4,6 +4,7 @@ const chromeLauncher = require("chrome-launcher");
 const fs = require("fs");
 const glob = require("glob");
 const path = require("path");
+const ModelException = require(`${global.__basepath}/src/Exceptions/ModelException`);
 const TimeStampHelper = require(`${global.__basepath}/src/Helpers/TimeStampHelper`);
 
 module.exports = function() {
@@ -58,6 +59,10 @@ module.exports = function() {
     }
 
     this.readReport = function (directory, filename) {
+        if(!fs.existsSync(`${this.path}/${directory}/${filename}.json`)){
+            throw ModelException.notFound();
+        }
+
         let output = fs.readFileSync(`${this.path}/${directory}/${filename}.json`, "utf8", (err, results) => {
             return results;
         });
