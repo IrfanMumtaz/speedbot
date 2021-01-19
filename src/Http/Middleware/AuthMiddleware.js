@@ -5,7 +5,6 @@ const AuthorizationException = require(`${global.__basepath}/src/Exceptions/Auth
 const AuthMiddleware = (req, res, next) => {
     console.log(`Logged Request: ${req.url}  ${req.method} -- ${new Date()}`);
 
-    console.log(req.headers["token"]);
     if (req.headers["token"] !== process.env.TOKEN) {
         throw AuthorizationException.unAuthorizedUser();
     }
