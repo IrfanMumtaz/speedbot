@@ -1,4 +1,5 @@
 "use strict";
+require("dotenv").config();
 const express = require("express"),
     app = express(),
     port = process.env.PORT || 3000,
@@ -12,10 +13,10 @@ global.__basepath = process.cwd();
 
 //middlewares
 const AuthMiddleware = require(`${global.__basepath}/src/Http/Middleware/AuthMiddleware`);
-app.use(AuthMiddleware)
+app.use(AuthMiddleware);
 
 //importing route
-const router = require(`${global.__basepath}/routes/route`); 
+const router = require(`${global.__basepath}/routes/route`);
 app.use(router);
 
 //Error Handler
