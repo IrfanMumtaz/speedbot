@@ -2,7 +2,7 @@
 require("dotenv").config();
 const express = require("express"),
     app = express(),
-    port = process.env.PORT || 3000,
+    port = process.env.PORT || 5001,
     bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,7 +13,7 @@ global.__basepath = process.cwd();
 
 //middlewares
 const AuthMiddleware = require(`${global.__basepath}/src/Http/Middleware/AuthMiddleware`);
-app.use(AuthMiddleware);
+// app.use(AuthMiddleware);
 
 //importing route
 const router = require(`${global.__basepath}/routes/route`);

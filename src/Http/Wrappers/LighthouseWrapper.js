@@ -1,19 +1,40 @@
 "use strict";
 const lighthouse = require("lighthouse");
-const underscore = require("underscore");
 const chromeLauncher = require("chrome-launcher");
 const fs = require("fs");
 const glob = require("glob");
 const path = require("path");
-const ModelException = require(`${global.__basepath}/src/Exceptions/ModelException`);
+const FileHelper = require(`${global.__basepath}/src/Helpers/FileHelper`);
 const TimeStampHelper = require(`${global.__basepath}/src/Helpers/TimeStampHelper`);
 
-module.exports = function () {
-    this.path = "Reports";
-    this.directory = null;
-    this.name = null;
+class LighthouseWrapper {
+    constructor() {
+        this.path = "Reports";
+    }
 
-    this.makeDirectory = function (user_id, url) {
+    run = async function (req) {
+        const dir = this.makeDirectory(req.user_id, req.url);
+        const name = TimeStampHelper.getCurrentTimeStamp();
+        const chrome = await chromeLauncher.launch({
+            chromeFlags: ["--headless"],
+        });
+        const options = {
+            logLevel: "info",
+            output: ["html", "json"],
+            onlyCategories: ["performance"],
+            port: chrome.port,
+        };
+        lighthouse(req.url, options).then((report) => {
+            const reportHtml = report.report;
+            const reportArray = reportHtml.toString().split("</html>");
+            reportArray[1] = reportArray[1].replace(",{", "{");
+            fs.writeFileSync(`${dir}/${name}.html`, reportArray[0]);
+            fs.writeFileSync(`${dir}/${name}.json`, reportArray[1]);
+            chrome.kill();
+        });
+    };
+
+    makeDirectory = function (user_id, url) {
         const urlObj = new URL(url);
         let dirName = urlObj.host.replace("www.", "");
         if (urlObj.pathname !== "/") {
@@ -29,7 +50,7 @@ module.exports = function () {
         return dirPath;
     };
 
-    this.syncPreviousReport = function () {
+    syncPreviousReport = function () {
         const prevReports = glob(`${this.directory}/*.json`, {
             sync: true,
         });
@@ -45,8 +66,8 @@ module.exports = function () {
         }
     };
 
-    this.writeRerport = function (results) {
-        const file = `${this.directory}/${this.name}.json`;
+    writeRerport = function (results, format) {
+        const file = `${this.directory}/${this.name}.${format}`;
         fs.writeFileSync(file, results.report, (err) => {
             if (err) throw err;
         });
@@ -54,28 +75,21 @@ module.exports = function () {
         return file;
     };
 
-    this.readReport = function (userId, url) {
-        console.log(`${this.path}/${userId}/${url}`);
-        const files = fs.readdirSync(`${this.path}/${userId}/${url}`);
-        files.forEach((file) => {
-            stats = fs.statSync(file);
-            console.log(stats.mtime);
-            console.log(stats.ctime);
-        });
-        return files;
+    readReport = function (userId, dir) {
+        const directory = `${global.__basepath}/Reports/${userId}/${dir}`;
+        const latestFile = FileHelper.getLatestFileName(
+            directory,
+            null,
+            "json"
+        );
+        console.log(directory, latestFile);
 
-        if (!fs.existsSync(file)) {
-            throw ModelException.notFound();
-        }
-
-        let output = fs.readFileSync(file, "utf8", (err, results) => {
-            return results;
-        });
+        let output = FileHelper.readFile(directory, latestFile);
         output = JSON.parse(output);
+
         return {
+            report: latestFile,
             performance: output.categories.performance.score * 100,
-            accessibility: output.categories.accessibility.score * 100,
-            seo: output.categories.seo.score * 100,
             first_contentful_paint:
                 output.audits.metrics.details.items[0].firstContentfulPaint /
                 1000,
@@ -97,17 +111,23 @@ module.exports = function () {
             estimated_input_latency:
                 output.audits.metrics.details.items[0].estimatedInputLatency,
             screenshot: output.audits["final-screenshot"].details.data,
+            /* accessibility: output.categories.accessibility.score * 100,
+            seo: output.categories.seo.score * 100,*/
         };
     };
 
-    this.lighthouseReport = function (url, chrome) {
-        lighthouse(url, { port: chrome.port }).then((result) => {
-            this.writeRerport(result);
-            chrome.kill();
+    /* lighthouseReport = function (url, chrome) {
+        const options = {
+            port: chrome.port,
+        };
+        lighthouse(url, options).then((result) => {
+            this.writeRerport(result, "html");
+            this.writeRerport(result, "json");
+            chrome.kill().then(() => result);
         });
     };
 
-    this.launchChromeAndRunLighthouse = async function (req) {
+    launchChromeAndRunLighthouse = async function (req) {
         try {
             const chrome = await chromeLauncher.launch();
 
@@ -128,5 +148,6 @@ module.exports = function () {
             console.log(error);
             return null;
         }
-    };
-};
+    }; */
+}
+module.exports = LighthouseWrapper;
