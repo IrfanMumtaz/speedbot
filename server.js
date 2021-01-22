@@ -2,7 +2,7 @@
 require("dotenv").config();
 const express = require("express"),
     app = express(),
-    port = process.env.PORT || 5001,
+    port = process.env.PORT || 5000,
     bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({ extended: true }));

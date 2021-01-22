@@ -4,6 +4,7 @@ const chromeLauncher = require("chrome-launcher");
 const fs = require("fs");
 const glob = require("glob");
 const path = require("path");
+const APP = require(`${global.__basepath}/src/Config/app`);
 const FileHelper = require(`${global.__basepath}/src/Helpers/FileHelper`);
 const TimeStampHelper = require(`${global.__basepath}/src/Helpers/TimeStampHelper`);
 
@@ -82,13 +83,12 @@ class LighthouseWrapper {
             null,
             "json"
         );
-        console.log(directory, latestFile);
 
         let output = FileHelper.readFile(directory, latestFile);
         output = JSON.parse(output);
 
         return {
-            report: latestFile,
+            report: `${APP.BASE_URL}/pagespeed/result/${userId}/${dir}`,
             performance: output.categories.performance.score * 100,
             first_contentful_paint:
                 output.audits.metrics.details.items[0].firstContentfulPaint /

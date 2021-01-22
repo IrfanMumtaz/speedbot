@@ -6,7 +6,7 @@ const FileHelper = require(`${global.__basepath}/src/Helpers/FileHelper`);
 exports.store = async (req, res) => {
     const lighthouseWrapper = new LighthouseWrapper();
     const data = await lighthouseWrapper.run(req.body);
-    res.json(data);
+    res.json({});
 };
 
 exports.index = async (req, res) => {
