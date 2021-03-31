@@ -116,6 +116,46 @@ class LighthouseWrapper {
         };
     };
 
+    readFullReport = function (userId, dir) {
+        const directory = `${global.__basepath}/Reports/${userId}/${dir}`;
+        const latestFile = FileHelper.getLatestFileName(
+            directory,
+            null,
+            "json"
+        );
+
+        let output = FileHelper.readFile(directory, latestFile);
+        return JSON.parse(output);
+
+        return {
+            report: `${APP.BASE_URL}/pagespeed/result/${userId}/${dir}`,
+            performance: output.categories.performance.score * 100,
+            first_contentful_paint:
+                output.audits.metrics.details.items[0].firstContentfulPaint /
+                1000,
+            first_meaningful_paint:
+                output.audits.metrics.details.items[0].firstMeaningfulPaint /
+                1000,
+            largest_contentful_paint:
+                output.audits.metrics.details.items[0].largestContentfulPaint /
+                1000,
+            interactive_time:
+                output.audits.metrics.details.items[0].interactive / 1000,
+            speed_index:
+                output.audits.metrics.details.items[0].speedIndex / 1000,
+            total_blocking_time:
+                output.audits.metrics.details.items[0].totalBlockingTime / 1000,
+            cumulative_layout_shft:
+                output.audits.metrics.details.items[0].cumulativeLayoutShift *
+                1000,
+            estimated_input_latency:
+                output.audits.metrics.details.items[0].estimatedInputLatency,
+            screenshot: output.audits["final-screenshot"].details.data,
+            /* accessibility: output.categories.accessibility.score * 100,
+            seo: output.categories.seo.score * 100,*/
+        };
+    };
+
     /* lighthouseReport = function (url, chrome) {
         const options = {
             port: chrome.port,

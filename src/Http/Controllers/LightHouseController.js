@@ -27,15 +27,10 @@ exports.show = async (req, res) => {
 
 exports.result = async (req, res) => {
     try {
-        const params = req.params;
-        const directory = `${global.__basepath}/Reports/${params.userId}/${params.dir}`;
-        const latestFile = FileHelper.getLatestFileName(
-            directory,
-            null,
-            "html"
-        );
-        const path = `${directory}/${latestFile}`;
-        res.sendFile(path);
+        const lighthouseWrapper = new LighthouseWrapper();
+        const { dir, userId } = req.params;
+        const data = await lighthouseWrapper.readFullReport(userId, dir);
+        res.json({ data });
     } catch (err) {
         console.log(err);
     }
